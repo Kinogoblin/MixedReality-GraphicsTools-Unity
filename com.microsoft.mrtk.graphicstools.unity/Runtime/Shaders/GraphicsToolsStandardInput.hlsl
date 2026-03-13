@@ -82,9 +82,6 @@ struct Varyings
     half3 worldNormal : COLOR3;
 #endif
 #endif
-#if defined(_RECEIVESHADOW) && defined(_URP)
-    half4 shadowCoord : TEXCOORD4;
-#endif
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
