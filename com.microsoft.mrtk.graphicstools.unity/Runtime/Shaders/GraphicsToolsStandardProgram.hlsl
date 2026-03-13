@@ -16,13 +16,13 @@
 
 #pragma multi_compile_local _ _CLIPPING_PLANE _CLIPPING_SPHERE _CLIPPING_BOX
 #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+#pragma multi_compile_fragment _ _SHADOWS_SOFT
 
 #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHABLEND_TRANS_ON _ADDITIVE_ON
 #pragma shader_feature_local _DISABLE_ALBEDO_MAP
 #pragma shader_feature_local_fragment _ _METALLIC_TEXTURE_ALBEDO_CHANNEL_A _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 #pragma shader_feature_local _CHANNEL_MAP
-#pragma shader_feature_local _ _DIRECTIONAL_LIGHT _DISTANT_LIGHTF
+#pragma shader_feature_local _ _DIRECTIONAL_LIGHT _DISTANT_LIGHT
 #pragma shader_feature_local _VERTEX_COLORS
 #pragma shader_feature_local _VERTEX_EXTRUSION
 #pragma shader_feature_local_vertex _VERTEX_EXTRUSION_SMOOTH_NORMALS
@@ -36,7 +36,6 @@
 #pragma shader_feature_local _USE_WORLD_SCALE
 
 #if !defined(_SHADOW_PASS)
-#pragma shader_feature_local _ _ALPHABLEND_ON _ALPHABLEND_TRANS_ON _ADDITIVE_ON
 #pragma shader_feature_local _NORMAL_MAP
 #pragma shader_feature_local _EMISSION
 #pragma shader_feature_local _TRIPLANAR_MAPPING
