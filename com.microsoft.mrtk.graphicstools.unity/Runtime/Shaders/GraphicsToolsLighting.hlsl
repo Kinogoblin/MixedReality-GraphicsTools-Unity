@@ -12,10 +12,18 @@ struct GTMainLight
 {
     half3 direction;
     half3 color;
+#if defined(_RECEIVESHADOW)
+    half shadowAttenuation;
+#endif
 };
 
-GTMainLight GTGetMainLight()
+#if defined(_RECEIVESHADOW)
+GTMainLight GTGetMainLight(float4 shadowCoord)
 {
+#else
+    GTMainLight GTGetMainLight()
+    {
+#endif
     GTMainLight light;
 #if defined(_DIRECTIONAL_LIGHT) || defined(_DISTANT_LIGHT) || defined(_SHADOW_PASS)
 #if defined(_DISTANT_LIGHT)
@@ -30,6 +38,9 @@ GTMainLight GTGetMainLight()
     light.direction = _WorldSpaceLightPos0.xyz;
     light.color = _LightColor0.rgb;
 #endif
+#endif
+#if defined(_RECEIVESHADOW) && defined(_URP)
+        light.shadowAttenuation = GetMainLight(shadowCoord).shadowAttenuation;
 #endif
 #endif
     return light;
@@ -217,9 +228,15 @@ half GTDirectBRDFSpecular(GTBRDFData brdfData, half3 normalWS, half3 lightDirect
     return specularTerm;
 }
 
-half3 GTLightingPhysicallyBased(GTBRDFData brdfData,
+#if defined(_RECEIVESHADOW)
+    half3 GTLightingPhysicallyBased(GTBRDFData brdfData,
+        half3 lightColor, half3 lightDirectionWS,
+        half3 normalWS, half3 viewDirectionWS ,half4 shadowAttenutation)
+#else
+    half3 GTLightingPhysicallyBased(GTBRDFData brdfData,
     half3 lightColor, half3 lightDirectionWS,
     half3 normalWS, half3 viewDirectionWS)
+#endif
 {
     half NdotL = saturate(dot(normalWS, lightDirectionWS));
     half3 radiance = lightColor * NdotL;
@@ -228,21 +245,35 @@ half3 GTLightingPhysicallyBased(GTBRDFData brdfData,
 #if defined(_SPECULAR_HIGHLIGHTS)
     brdf += brdfData.specular * GTDirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
 #endif
-
+    
+#if defined(_RECEIVESHADOW)
+    return brdf * radiance * shadowAttenutation;
+#else
     return brdf * radiance;
+#endif
 }
 
 
-half3 GTLightingNonPhotorealistic(GTBRDFData brdfData,
-half3 lightColor, half3 lightDirectionWS,
-half3 normalWS, half3 viewDirectionWS)
+#if defined(_RECEIVESHADOW)
+    half3 GTLightingNonPhotorealistic(GTBRDFData brdfData,
+    half3 lightColor, half3 lightDirectionWS,
+    half3 normalWS, half3 viewDirectionWS,half4 shadowAttenutation)
+#else
+    half3 GTLightingNonPhotorealistic(GTBRDFData brdfData,
+    half3 lightColor, half3 lightDirectionWS,
+    half3 normalWS, half3 viewDirectionWS)
+#endif
 {
    half NdotL = ceil(saturate(dot(normalWS, lightDirectionWS)));
    half3 radiance = lightColor * NdotL;
 
    half3 brdf = brdfData.diffuse;
-
-   return brdf * radiance;
+    
+#if defined(_RECEIVESHADOW)
+    return brdf * radiance * shadowAttenutation;
+#else
+    return brdf *radiance;
+#endif
 }
 
 #endif // GT_LIGHTING

@@ -1356,3 +1356,4 @@ namespace Microsoft.MixedReality.GraphicsTools.Editor
         }
     }
 }
+
