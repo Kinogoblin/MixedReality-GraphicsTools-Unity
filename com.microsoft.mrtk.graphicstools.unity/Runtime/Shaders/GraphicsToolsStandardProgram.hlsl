@@ -15,7 +15,7 @@
 /// </summary>
 
 #pragma multi_compile_local _ _CLIPPING_PLANE _CLIPPING_SPHERE _CLIPPING_BOX
-#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
 #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
 #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHABLEND_TRANS_ON _ADDITIVE_ON
@@ -379,10 +379,6 @@ Varyings VertexStage(Attributes input)
 #else
     output.worldNormal = worldNormal;
 #endif
-#endif
-#if defined(_RECEIVESHADOW) && defined(_URP)
-    VertexPositionInputs vertexInput = GetVertexPositionInputs(vertexPosition.xyz);
-    output.shadowCoord = GetShadowCoord(vertexInput);
 #endif
 
     return output;
@@ -797,11 +793,13 @@ half4 PixelStage(Varyings input, bool facing : SV_IsFrontFace) : SV_Target
     output.rgb = GTGlobalIllumination(brdfData, bakedGI, occlusion, worldNormal, worldViewDir);
 
     // Direct lighting.
-#if defined(_RECEIVESHADOW) && defined(_URP)
-    GTMainLight light = GTGetMainLight(input.shadowCoord);
-#else
+    #if defined(_RECEIVESHADOW) && defined(_URP)
+    float4 shadowCoord = TransformWorldToShadowCoord(input.worldPosition.xyz);
+    GTMainLight light = GTGetMainLight(shadowCoord);
+    #else
     GTMainLight light = GTGetMainLight();
-#endif
+    #endif
+    
     // Non Photorealistic
 #if defined(_NON_PHOTOREALISTIC)
 #if defined(_RECEIVESHADOW)
