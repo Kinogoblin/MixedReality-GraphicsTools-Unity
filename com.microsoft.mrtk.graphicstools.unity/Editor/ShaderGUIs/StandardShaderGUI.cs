@@ -116,6 +116,7 @@ namespace Microsoft.MixedReality.GraphicsTools.Editor
             public static readonly GUIContent nonPhotorealisticRendering = new GUIContent("Non-Photorealistic Rendering","Non-Photorealistic Rendering");
             public static readonly GUIContent specularHighlights = new GUIContent("Specular Highlights", "Calculate Specular Highlights");
             public static readonly GUIContent sphericalHarmonics = new GUIContent("Spherical Harmonics", "Read From Spherical Harmonics Data for Ambient Light");
+            public static readonly GUIContent receiveShadow = new GUIContent("Receive Shadow", "Calculate Shadows");
             public static readonly GUIContent reflections = new GUIContent("Reflections", "Calculate Glossy Reflections");
             public static readonly GUIContent rimLight = new GUIContent("Rim Light", "Enable Rim (Fresnel) Lighting");
             public static readonly GUIContent rimColor = new GUIContent("Color", "Rim Highlight Color");
@@ -233,6 +234,7 @@ namespace Microsoft.MixedReality.GraphicsTools.Editor
         protected MaterialProperty smoothness;
         protected MaterialProperty lightMode;
         protected MaterialProperty specularHighlights;
+        protected MaterialProperty receiveShadow;
         protected MaterialProperty sphericalHarmonics;
         protected MaterialProperty nonPhotorealisticRendering;
         protected MaterialProperty reflections;
@@ -348,6 +350,7 @@ namespace Microsoft.MixedReality.GraphicsTools.Editor
             mipmapBias = FindProperty("_MipmapBias", props);
             lightMode = FindProperty("_DirectionalLight", props);
             specularHighlights = FindProperty("_SpecularHighlights", props);
+            receiveShadow = FindProperty("_ReceiveShadow", props);
             sphericalHarmonics = FindProperty("_SphericalHarmonics", props);
             nonPhotorealisticRendering = FindProperty("_NPR", props);
             reflections = FindProperty("_Reflections", props);
@@ -463,6 +466,7 @@ namespace Microsoft.MixedReality.GraphicsTools.Editor
             float? smoothness = GetFloatProperty(material, "_Glossiness");
             float? diffuse = GetFloatProperty(material, "_UseDiffuse");
             float? specularHighlights = GetFloatProperty(material, "_SpecularHighlights");
+            float? receiveShadow = GetFloatProperty(material, "_ReceiveShadow");
             float? normalMap = null;
             Texture normalMapTexture = material.HasProperty("_BumpMap") ? material.GetTexture("_BumpMap") : null;
             float? normalMapScale = GetFloatProperty(material, "_BumpScale");
@@ -502,6 +506,7 @@ namespace Microsoft.MixedReality.GraphicsTools.Editor
             {
                 SetShaderFeatureActive(material, "_DIRECTIONAL_LIGHT", "_DirectionalLight", diffuse);
                 SetShaderFeatureActive(material, "_SPECULAR_HIGHLIGHTS", "_SpecularHighlights", specularHighlights);
+                SetShaderFeatureActive(material, "_RECEIVESHADOW", "_ReceiveShadow", receiveShadow);
             }
 
             SetShaderFeatureActive(material, "_NORMAL_MAP", "_EnableNormalMap", normalMap);
@@ -724,6 +729,7 @@ namespace Microsoft.MixedReality.GraphicsTools.Editor
                 materialEditor.ShaderProperty(specularHighlights, Styles.specularHighlights, 2);
                 materialEditor.ShaderProperty(sphericalHarmonics, Styles.sphericalHarmonics, 2);
                 materialEditor.ShaderProperty(nonPhotorealisticRendering, Styles.nonPhotorealisticRendering, 2);
+                materialEditor.ShaderProperty(receiveShadow, Styles.receiveShadow, 2);
             }
 
             materialEditor.ShaderProperty(reflections, Styles.reflections);
